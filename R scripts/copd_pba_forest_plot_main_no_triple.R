@@ -278,7 +278,7 @@ forest_table_death <- forest_table_death %>%
   )) %>% 
   mutate(orderno = (nrow(forest_table_hosp) + 1) - order)
 
-# Generate forest plot for deathitalizations
+# Generate forest plot for death
 forest_plot_death <- ggplot(forest_table_death, aes(x = point_estimate, y = orderno)) +
   geom_point(aes(x = point_estimate), shape = 16, size = 5) +
   geom_linerange(aes(xmin = lower_CI, xmax = upper_CI)) +
