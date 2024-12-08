@@ -28,6 +28,8 @@ putexcel A3 = "n_rx"
 SET UP LOOPING THROUGH ALL DRUG CLASSES
 *************************************************************/
 local drug ics_single ics_laba laba_lama laba_single lama_single triple_therapy
+local drug budesonide_single budesonide_laba 
+local drug triple_budesonide
 di `"`drug'"'
 
 local ncol = 2

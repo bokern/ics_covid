@@ -39,7 +39,8 @@ glob common_dosages "$Mainfolder\common_dosages.dta"
 merge each drug type drug issue file with included patient list and dosage lookup file
 *******************************************************************************************************************/
 
-local drugissue ics_single ics_laba laba_lama laba_single lama_single triple_therapy
+local drugissue ics_single ics_laba laba_lama laba_single lama_single triple_therapy budesonide_single budesonide_laba 
+local drugissue triple_budesonide
 disp `"`drugissue'"'
 
 foreach drug in `drugissue' {
