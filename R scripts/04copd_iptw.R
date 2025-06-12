@@ -22,7 +22,7 @@ palette <- met.brewer("Cassatt2")
 #keep only people who are in one of the treatment groups, remove all unnecessary variables
 subset_df <- df[!is.na(df$treatgroup),]
 
-subset_df <- subset_df[, c("patid", "age_index", "gender", "death_date", "imd", "bmicat", "eth", "diabetes_present", "hypertension_present", "cvd_present", "allcancers_present", "past_asthma_present", "kidney_present", "immunosuppression_present", "flu_vacc_present", "pneumo_vacc_present", "exacerb_present", "smokstatus","timeinstudy1", "timeinstudy2", "timeinstudy3", "timeinstudy_death_any", "timeinstudy_covid_hes_any", "timeout1", "timeout2", "timeout3", "timeout_death_any", "timeout_any_covid_hes", "pos_covid_test_present", "covid_hes_present", "covid_death_present", "any_death_present", "any_covid_hes_present", "treat", "treatgroup", "missing_ons")]
+subset_df <- subset_df[, c("patid", "age_index", "gender", "death_date", "imd", "bmicat", "eth", "diabetes_present", "hypertension_present", "cvd_present", "allcancers_present", "past_asthma_present", "kidney_present", "immunosuppression_present", "flu_vacc_present", "pneumo_vacc_present", "exacerb_present", "smokstatus","timeinstudy1", "timeinstudy2", "timeinstudy3", "timeinstudy_death_any", "timeout1", "timeout2", "timeout3", "timeout_death_any", "pos_covid_test_present", "covid_hes_present", "covid_death_present", "any_death_present", "treat", "treatgroup", "missing_ons")]
 
 #check missingness pattern
 #md.pattern(subset_df, rotate.names = TRUE)
