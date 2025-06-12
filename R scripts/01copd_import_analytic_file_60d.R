@@ -16,6 +16,16 @@ setwd(Datadir_copd)
 #read in csv dataset
 df <- read.csv("copd_analytic_file_w1_60d.csv", colClasses = c("patid" = "character"), header = T)
 
+#count baseline ics and baseline control
+sum(df$baseline_ics == 1, na.rm = TRUE)
+sum(df$baseline_control == 1, na.rm = TRUE)
+
+#count pos_covid_test_date not empty where baseline_ics is 1 or baseline_control is 1
+length(unique(df$patid[(df$baseline_ics == 1 | df$baseline_control == 1) & df$pos_covid_test_date != ""]))
+length(unique(df$patid[(df$baseline_ics == 1 | df$baseline_control == 1) & df$covid_hes_date != ""]))
+length(unique(df$patid[(df$baseline_ics == 1 | df$baseline_control == 1)]))
+
+
 file_path <- paste0(Projectdir_stata, "patients_missing_ons.csv")
 df_missing_ons <- read.csv(file_path, colClasses = c("patid" = "character"), header = T)
 
@@ -244,6 +254,11 @@ df <- df %>%
 
 #export as parquet file
 arrow::write_parquet(df, "copd_wave1_60d.parquet")
+length(unique((df$patid[df$treat == "ICS"])))
+length(unique((df$patid[df$treat == "LABA/LAMA"])))
+
+length(unique((df$patid[df$treat == "ICS" & df$covid_death_present == 1])))
+length(unique((df$patid[df$treat == "LABA/LAMA" & df$covid_death_present == 1])))
 
 # #drop variables aside from regend, treatgroup, treat, patid, and timeinstudy1, timeinstudy2, timeinstudy3, timeinstudy_death_any, pos_covid_test_present, covid_hes_present, covid_death_present, any_death_present, hos_pre_death, death_date, death_date_cprd, death_date_ons, death, baseline_ics, baseline_control, baseline_triple
 # 
