@@ -77,6 +77,8 @@ TRIPLE THERAPY has been extracted in inclusion/ exclusion criteria file
 ******************************************************************************************/
 
 local product ics_single ics_laba laba_lama laba_single lama_single
+local product budesonide_single budesonide_laba 
+local product triple_budesonide
 disp `"`product'"'
 
 foreach drug of local product {

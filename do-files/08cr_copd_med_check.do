@@ -123,4 +123,59 @@ compress
 save "${file_stub}_${drugclass}_checked", replace
 
 clear all
+/****************************************************************************
+BUDESONIDE SINGLE
+*****************************************************************************/
+global drugclass budesonide_single
+use "${file_stub}_${drugclass}", clear
+
+
+sort drugsubstancename
+count if missing(drugsubstancename)
+replace drugsubstancename = "budesonide" if regex(termfromemis, "budesonide") | regex(termfromemis, "pulmicort") & drugsubstancename==""
+count if missing(drugsubstancename)
+
+***no missing drugsubstancenames
+
+assert drugsubstancename != ""
+compress
+save "${file_stub}_${drugclass}_checked", replace
+
+clear all
+/****************************************************************************
+BUDESONIDE LABA
+*****************************************************************************/
+global drugclass budesonide_laba
+use "${file_stub}_${drugclass}", clear
+
+sort drugsubstancename
+count if missing(drugsubstancename)
+replace drugsubstancename = "budesonide" if regex(termfromemis, "budesonide") | regex(termfromemis, "pulmicort") & drugsubstancename==""
+count if missing(drugsubstancename)
+
+***no missing drugsubstancenames
+
+assert drugsubstancename != ""
+compress
+save "${file_stub}_${drugclass}_checked", replace
+
+clear all
+/****************************************************************************
+BUDESONIDE TRIPLE
+*****************************************************************************/
+global drugclass triple_budesonide
+use "${file_stub}_${drugclass}", clear
+
+sort drugsubstancename
+count if missing(drugsubstancename)
+*replace drugsubstancename = "budesonide" if regex(termfromemis, "budesonide") | regex(termfromemis, "pulmicort") & drugsubstancename==""
+count if missing(drugsubstancename)
+
+***no missing drugsubstancenames
+
+assert drugsubstancename != ""
+compress
+save "${file_stub}_${drugclass}_checked", replace
+
+clear all
 log close 

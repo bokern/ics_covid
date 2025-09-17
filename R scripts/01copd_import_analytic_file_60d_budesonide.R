@@ -14,17 +14,9 @@ lapply(packages, library, character.only = TRUE)
 setwd(Datadir_copd)
 
 #read in csv dataset
-df <- read.csv("copd_analytic_file_w1_60d.csv", colClasses = c("patid" = "character"), header = T)
-
-#count baseline ics and baseline control
-sum(df$baseline_ics == 1, na.rm = TRUE)
+df <- read.csv("copd_analytic_file_w1_60d_budesonide.csv", colClasses = c("patid" = "character"), header = T)
+sum(df$baseline_budesonide == 1, na.rm = TRUE)
 sum(df$baseline_control == 1, na.rm = TRUE)
-
-#count pos_covid_test_date not empty where baseline_ics is 1 or baseline_control is 1
-length(unique(df$patid[(df$baseline_ics == 1 | df$baseline_control == 1) & df$pos_covid_test_date != ""]))
-length(unique(df$patid[(df$baseline_ics == 1 | df$baseline_control == 1) & df$covid_hes_date != ""]))
-length(unique(df$patid[(df$baseline_ics == 1 | df$baseline_control == 1)]))
-
 
 file_path <- paste0(Projectdir_stata, "patients_missing_ons.csv")
 df_missing_ons <- read.csv(file_path, colClasses = c("patid" = "character"), header = T)
@@ -42,17 +34,17 @@ df$death_date <- ifelse(df$death_date_ons != "", df$death_date_ons,
 # Reformatting variables --------------------------------------------------
 
 #create binary treatment group variable. Set to 1 if ICS group, set to 0 if LABA/LAMA
-df$treatgroup <- ifelse(df$baseline_ics == 1, 1, NA)
+df$treatgroup <- ifelse(df$baseline_budesonide == 1, 1, NA)
 df$treatgroup[df$baseline_control == 1] <- 0
 df$treatgroup <- as.factor(df$treatgroup)
 
-df_baseline <- df %>% dplyr::select(c("patid", "treatgroup", "baseline_ics", "baseline_control", "baseline_triple"))
-sum(df_baseline$baseline_ics == 1, na.rm = TRUE)
+df_baseline <- df %>% dplyr::select(c("patid", "treatgroup", "baseline_budesonide", "baseline_control", "baseline_triple_bud"))
+sum(df_baseline$baseline_budesonide == 1, na.rm = TRUE)
 sum(df_baseline$baseline_control == 1, na.rm = TRUE)
-sum(df_baseline$baseline_triple == 1, na.rm = TRUE)
-sum(df_baseline$baseline_ics == 1 & df_baseline$baseline_control == 1)
+sum(df_baseline$baseline_triple_bud == 1, na.rm = TRUE)
+sum(df_baseline$baseline_budesonide == 1 & df_baseline$baseline_control == 1)
 
-write.xlsx(df_baseline, "copd_baseline_exposure.xlsx")
+write.xlsx(df_baseline, "copd_baseline_exposure_60d_budesonide.xlsx")
 
 #convert covariates coded as date variables to dates 
 date_cols <- c("regstart", "death_date_cprd", "death_date", "regend", "dob", "do35bday", "lcd", "enddate", "diabetes_date", "hypertension_date", "past_asthma_date", "cvd_date", "allcancers_date", "kidney_date", "immunosuppression_date", "smokdate", "flu_vacc_date", "pneumo_vacc_date", "pos_covid_test_date", "covid_hes_date", "covid_death_date", "death_date_ons")
@@ -94,7 +86,7 @@ df$imd <- fct_explicit_na(df$imd, "Missing")
 labels_treat <- c("LABA/LAMA", "ICS")
 labels_gender <- c("Male", "Female")
 #labels_smoking <- c("Current smoking", "Current/Former smoking", "Former smoking", "Unclear")
-labels_ics_ever <- c("ICS")
+labels_budesonide_ever <- c("ICS")
 labels_control_ever <- c("LABA/LAMA")
 
 # Convert the variable to a factor with the specified labels
@@ -102,7 +94,7 @@ df$treat <- ifelse(df$treatgroup == 0, "LABA/LAMA",
                    ifelse(df$treatgroup == 1, "ICS", NA))
 df$gender <- factor(df$gender, levels = c(1,2), labels = labels_gender)
 #df$smok <- factor(df$smokstatus, labels = labels_smoking)
-df$ics_ever <- factor(df$ics_ever, labels = labels_ics_ever)
+df$budesonide_ever <- factor(df$budesonide_ever, labels = labels_budesonide_ever)
 df$control_ever <- factor(df$control_ever, labels = labels_control_ever)
 
 # Recode ethnicity 
@@ -116,6 +108,11 @@ df$eth[df$eth5 == "2. Black"] <- 2
 df$eth[df$eth5 == "4. Mixed"] <- 3
 df$eth[df$eth5 == "5. Not Stated" | df$eth5 == "3. Other" | df$eth5 == ""] <- 4
 
+#This also works
+# df$ethn <- ifelse(df$eth5 == "", NA, df$eth5)
+# df$ethn <- factor(df$ethn)
+# df$ethn <- ifelse(df$eth5 == 6, NA, df$ethn)
+
 labels_eth <- c("White", "South Asian", "Black", "Mixed", "Unknown")
 df$eth <- factor(df$eth, levels = c(0,1,2,3,4), labels = labels_eth)
 
@@ -127,6 +124,7 @@ df$bmicat[df$bmi < 18.5] <- 1
 df$bmicat[df$bmi >= 18.5 & df$bmi < 25] <- 2
 df$bmicat[df$bmi >= 25 & df$bmi < 30] <- 3
 df$bmicat[df$bmi >= 30] <- 4
+
 df$bmicat[is.na(df$bmicat)] <- 2
 
 # Assign category labels
@@ -206,6 +204,8 @@ df$timeinstudy_death_any <- df$timeout_death_any - df$time_origin
 
 df <- df %>% dplyr::select(-c("yob", "mob", "day", "dob", "yo35bday", "do35bday", "lcd", "diabetes_date", "hypertension_date", "past_asthma_date", "cvd_date", "allcancers_date", "kidney_date", "immunosuppression_date", "smokdate", "flu_vacc_date", "pneumo_vacc_date", "dobmi"))
 
+#if these columns exist, remove them
+
 # Filter the dataframe based on conditions
 missing_ons_laba <- df %>%
   filter(missing_ons == 1 & treat == "LABA/LAMA") %>%
@@ -213,7 +213,7 @@ missing_ons_laba <- df %>%
   unique()
 
 # Filter the dataframe based on conditions
-missing_ons_ics <- df %>%
+missing_ons_budesonide <- df %>%
   filter(missing_ons == 1 & treat == "ICS") %>%
   pull(patid) %>%
   unique()
@@ -227,12 +227,12 @@ surv_laba <- df %>%
 surv_laba$unique_patids
 
 # Filter the dataframe based on conditions
-surv_ics <- df %>%
+surv_budesonide <- df %>%
   filter(missing_ons == 0 & any_death_present == 0  & treat == "ICS") %>%
   summarise(unique_patids = n_distinct(patid))
 
 # View the count of unique patids
-surv_ics$unique_patids
+surv_budesonide$unique_patids
 
 length(unique((df$patid[df$treat == "ICS"])))
 length(unique((df$patid[df$treat == "LABA/LAMA"])))
@@ -245,12 +245,12 @@ df <- df %>%
         covid_hes_date < death_date, 1, 0))
 
 #export as parquet file
-arrow::write_parquet(df, "copd_wave1_60d.parquet")
+arrow::write_parquet(df, "copd_wave1_60d_budesonide.parquet")
+
+#count number of people in ics and laba/lama group
 length(unique((df$patid[df$treat == "ICS"])))
 length(unique((df$patid[df$treat == "LABA/LAMA"])))
 
-length(unique((df$patid[df$treat == "ICS" & df$covid_death_present == 1])))
-length(unique((df$patid[df$treat == "LABA/LAMA" & df$covid_death_present == 1])))
 
 # #drop variables aside from regend, treatgroup, treat, patid, and timeinstudy1, timeinstudy2, timeinstudy3, timeinstudy_death_any, pos_covid_test_present, covid_hes_present, covid_death_present, any_death_present, hos_pre_death, death_date, death_date_cprd, death_date_ons, death, baseline_ics, baseline_control, baseline_triple
 # 
@@ -263,3 +263,4 @@ length(unique((df$patid[df$treat == "LABA/LAMA" & df$covid_death_present == 1]))
 # df2 <- df2 %>% dplyr::select(c("patid", "enddate", "regend", "treatgroup", "treat", "timeinstudy1", "timeinstudy2", "timeinstudy3", "timeinstudy_death_any", "pos_covid_test_present", "covid_hes_present", "covid_death_present", "any_death_present", "hos_pre_death", "death_date", "death_date_cprd", "death_date_ons", "baseline_ics", "baseline_control"))
 # 
 # df <- merge(df, df2[, c("patid", "treatgroup")], by = "patid", all.x = TRUE)
+

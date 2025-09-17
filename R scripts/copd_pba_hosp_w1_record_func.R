@@ -518,7 +518,7 @@ hosp_record_qba <- function(inputfile_cohort, inputfile_iptw, samples, output_ex
   file_path <- file.path(Graphdir, "QBA", "copd_hosp_w1",  paste0("sampled_sp_RL_pba_hosp", output_ext, ".png"))
   ggsave(file_path, plot, width = 8, height = 4)
   
-  plot <- ggplot(data = output_df, aes(x = PPV_e1, color = "ICS")) +
+  plot_ppv <- ggplot(data = output_df, aes(x = PPV_e1, color = "ICS")) +
     geom_density(adjust = 1, aes(color = "ICS"), fill = NA, size = 1) +
     geom_density(aes(x = PPV_e0, color = "LABA/LAMA"), adjust = 1, fill = NA, size = 1) +
     xlab("Sampled PPV") +
@@ -536,9 +536,9 @@ hosp_record_qba <- function(inputfile_cohort, inputfile_iptw, samples, output_ex
     scale_color_manual(values = c("ICS" = palette[9], "LABA/LAMA" = palette[4]), labels = c("ICS", "LABA/LAMA")) +
     guides(color = guide_legend(title = NULL, override.aes = list(fill = c(palette[9], palette[4]))))
   file_path <- file.path(Graphdir, "QBA", "copd_hosp_w1", paste0("sampled_PPV_RL_pba_hosp", output_ext, ".png"))
-  ggsave(file_path, plot, width = 8, height = 4)
+  ggsave(file_path, plot_ppv, width = 8, height = 4)
   
-  plot <- ggplot(data = output_df, aes(x = NPV_e1, color = "ICS")) +
+  plot_npv <- ggplot(data = output_df, aes(x = NPV_e1, color = "ICS")) +
     geom_density(adjust = 1, aes(color = "ICS"), fill = NA, size = 1) +
     geom_density(aes(x = NPV_e0, color = "LABA/LAMA"), adjust = 1, fill = NA, size = 1) +
     xlab("Sampled NPV") +
@@ -554,7 +554,53 @@ hosp_record_qba <- function(inputfile_cohort, inputfile_iptw, samples, output_ex
     scale_color_manual(values = c("ICS" = palette[9], "LABA/LAMA" = palette[4]), labels = c("ICS", "LABA/LAMA")) +
     guides(color = guide_legend(title = NULL, override.aes = list(fill = c(palette[9], palette[4]))))
   file_path <- file.path(Graphdir, "QBA", "copd_hosp_w1", paste0("sampled_NPV_RL_pba_hosp", output_ext, ".png"))
-  ggsave(file_path, plot, width = 8, height = 4)
+  ggsave(file_path, plot_npv, width = 8, height = 4)
+  
+  # Extract the legend from one of the plots
+  legend_plot <- plot_ppv +
+    scale_color_manual(values = c("ICS" = palette[9], "LABA/LAMA" = palette[4])) +
+    scale_fill_manual(values = c("ICS" = palette[9], "LABA/LAMA" = palette[4])) +
+    theme(
+      legend.text = element_text(size = 18),
+      legend.box = "horizontal",
+      legend.spacing.x = unit(0.6, "cm"),
+      legend.key.size = unit(0.6, "cm"),
+      plot.margin = margin(t = -20, r = 0, b = 0, l = 0)
+    ) +
+    guides(
+      color = guide_legend(
+        override.aes = list(
+          fill = c(palette[9], palette[4]),
+          size = 5,
+          shape = 15
+        ), 
+        title = NULL,
+        nrow = 1,
+        keywidth = unit(0.8, "cm"),
+        keyheight = unit(0.8, "cm")
+      )
+    )
+  
+  shared_legend <- get_legend(legend_plot)
+  
+  # Combine the PPV and NPV plots without legends
+  plot_ppv <- plot_ppv + theme(legend.position = "none")
+  plot_npv <- plot_npv + theme(legend.position = "none") 
+  #remove y axis label from the NPV plot
+  plot_npv <- plot_npv + theme(axis.title.y = element_blank())
+  combined_plot <- cowplot::plot_grid(
+    plot_ppv, plot_npv, ncol = 2, labels = c("A", "B")
+  )
+  
+  # Add the legend below the combined plot
+  final_plot <- cowplot::plot_grid(
+    combined_plot, shared_legend, ncol = 1, rel_heights = c(0.9, 0.1)
+  )
+  
+  # Save the final plot
+  file_path <- file.path(Graphdir, "QBA", "copd_hosp_w1", paste0("sampled_PPV_NPV_RL_pba_hosp", output_ext, ".png"))
+  ggsave(file_path, final_plot, width = 10, height = 4)
+  
   
   plot <- ggplot(data = output_df, aes(x = PrevD_exp, color = "ICS")) +
     geom_density(adjust = 1, fill = NA, size = 1) +
