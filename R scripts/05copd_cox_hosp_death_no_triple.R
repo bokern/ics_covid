@@ -181,7 +181,7 @@ for (j in seq_along(outcomes)){
   or_unadj_log <- exp(coef_unadj_log)
   se_unadj_log <- summary(model_unadj_log)$coef[, "Std. Error"][2]
   z_value <- qnorm(0.975) # 95% confidence interval
-  ci_unadj_log <- cbind(
+  ci_unadj_log <- c(
   coef_unadj_log - z_value * se_unadj_log,
   coef_unadj_log + z_value * se_unadj_log)
   or_unadj_log_ci <- exp(ci_unadj_log)
@@ -199,8 +199,8 @@ for (j in seq_along(outcomes)){
   estimates[result_position, paste0("coef_unadj_log")] <- coef_unadj_log
   estimates[result_position, paste0("or_unadj_log")] <- or_unadj_log
   estimates[result_position, paste0("se_unadj_log")] <- se_unadj_log
-  estimates[result_position, paste0("ci_lower_unadj_log")] <- or_unadj_log_ci["treatICS", 1]
-  estimates[result_position, paste0("ci_upper_unadj_log")] <- or_unadj_log_ci["treatICS", 2]
+  estimates[result_position, paste0("ci_lower_unadj_log")] <- or_unadj_log_ci[1]
+  estimates[result_position, paste0("ci_upper_unadj_log")] <- or_unadj_log_ci[2]
   
   #adjusted models 
   for (w in seq_along(weight_vars)) {
@@ -260,7 +260,7 @@ for (j in seq_along(outcomes)){
     or_iptw_log <- exp(coef_iptw_log)
     se_iptw_log <- summary(model_iptw_log)$coef[, "Std. Error"][2]
     z_value <- qnorm(0.975)
-    ci_iptw_log <- cbind(
+    ci_iptw_log <- c(
       coef_iptw_log - z_value * se_iptw_log,
       coef_iptw_log + z_value * se_iptw_log)
     or_iptw_log_ci <- exp(ci_iptw_log)

@@ -25,6 +25,15 @@ death_summary_qba <- function(inputfile, conventional_result, samples, output_ex
   D$treat <- factor(D$treat)
   D$treat <- relevel(D$treat, ref = "LABA/LAMA")
   
+    D <- D %>%
+    group_by(treat) %>%
+    summarise(
+      any_death_present = sum(any_death_present > 0, na.rm = TRUE),
+      covid_death_present = sum(covid_death_present > 0, na.rm = TRUE),
+      n = n_distinct(patid)
+    ) %>%
+    ungroup()
+  
   I <- 100000
   
   estimates <- read_parquet(file.path(Tables, "QBA", conventional_result))
@@ -442,9 +451,9 @@ inputfile <- c("copd_wave1_60d_iptw.parquet", "SA_copd_wave1_60d_iptw_no_triple.
 conventional_result <- c("cox_log_regression_estimates.parquet", "SA_cox_log_regression_estimates_no_triple.parquet", "SA_cox_log_regression_estimates_6m.parquet", "SA_cox_log_regression_estimates_all.parquet")
 samples <- c("qba_death_summary_full_sample.parquet", "SA_qba_death_summary_full_sample_no_triple.parquet", "SA_qba_death_summary_full_sample_6m.parquet", "SA_qba_death_summary_full_sample_all.parquet")
 output_ext <- c("", "_no_triple",  "_6m", "_all")
-
-# inputfile <- c("copd_wave1_60d_iptw.parquet")
-# conventional_result <- c("cox_log_regression_estimates.parquet")
+# 
+# inputfile <- c("SA_copd_wave1_60d_iptw_no_triple.parquet")
+# conventional_result <- c("SA_cox_log_regression_estimates_no_triple.parquet")
 # samples <- c("qba_death_summary_full_sample.parquet")
 # output_ext <- c("")
 #run the function

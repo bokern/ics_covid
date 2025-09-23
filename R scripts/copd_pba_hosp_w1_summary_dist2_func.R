@@ -2,7 +2,7 @@
 # Date: 10/2023
 # Purpose: application of summary level PBA to hospitalisations. Code adapted from : https://academic.oup.com/ije/article/52/5/1624/7152433
 
-packages <- c("tidyverse", "episensr", "ggplot2", "dplyr", "sandwich", "MASS", "arrow", "MetBrewer", "openxlsx")
+packages <- c("tidyverse", "episensr", "ggplot2", "dplyr", "sandwich", "MASS", "arrow", "MetBrewer", "openxlsx", "cowplot")
 installed_packages <- packages %in% rownames(installed.packages())
 if (any(installed_packages == FALSE)) {
   install.packages(packages[!installed_packages])
@@ -420,18 +420,18 @@ print(run_time)
 }
 
 #list inputfiles
-inputfile_cohort <- c("copd_wave1_60d_hosp.parquet", "copd_wave1_60d_hosp.parquet", "copd_wave1_6m_hosp.parquet", "copd_wave1_60d_hosp_all.parquet" )
-inputfile_iptw <- c("copd_wave1_60d_iptw.parquet", "SA_copd_wave1_60d_iptw_no_triple.parquet", "SA_copd_wave1_6m_iptw.parquet", "SA_copd_wave1_60d_iptw_all.parquet")
-conventional_result <- c("cox_log_regression_estimates.parquet", "SA_cox_log_regression_estimates_no_triple.parquet", "SA_cox_log_regression_estimates_6m.parquet", "SA_cox_log_regression_estimates_all.parquet")
-samples <- c("qba_hosp_summary_full_sample.parquet", "SA_qba_hosp_summary_full_sample_no_triple.parquet", "SA_qba_hosp_summary_full_sample_6m.parquet", "SA_qba_hosp_summary_full_sample_all.parquet")
-output_ext <- c("", "_no_triple",  "_6m", "_all")
+# inputfile_cohort <- c("copd_wave1_60d_hosp.parquet", "copd_wave1_60d_hosp.parquet", "copd_wave1_6m_hosp.parquet", "copd_wave1_60d_hosp_all.parquet" )
+# inputfile_iptw <- c("copd_wave1_60d_iptw.parquet", "SA_copd_wave1_60d_iptw_no_triple.parquet", "SA_copd_wave1_6m_iptw.parquet", "SA_copd_wave1_60d_iptw_all.parquet")
+# conventional_result <- c("cox_log_regression_estimates.parquet", "SA_cox_log_regression_estimates_no_triple.parquet", "SA_cox_log_regression_estimates_6m.parquet", "SA_cox_log_regression_estimates_all.parquet")
+# samples <- c("qba_hosp_summary_full_sample.parquet", "SA_qba_hosp_summary_full_sample_no_triple.parquet", "SA_qba_hosp_summary_full_sample_6m.parquet", "SA_qba_hosp_summary_full_sample_all.parquet")
+# output_ext <- c("", "_no_triple",  "_6m", "_all")
 
 # 
-# inputfile_cohort <- c("copd_wave1_60d_hosp.parquet")
-# inputfile_iptw <- c("SA_copd_wave1_60d_iptw_no_triple.parquet")
-# conventional_result <- c("SA_cox_log_regression_estimates_no_triple.parquet")
-# samples <- c("SA_qba_hosp_summary_full_sample_no_triple.parquet")
-# output_ext <- c("_no_triple")
+inputfile_cohort <- c("copd_wave1_60d_hosp.parquet")
+inputfile_iptw <- c("copd_wave1_60d_iptw.parquet")
+conventional_result <- c("cox_log_regression_estimates.parquet")
+samples <- c("qba_hosp_summary_full_sample.parquet")
+output_ext <- c("")
 
 
 #run the function
