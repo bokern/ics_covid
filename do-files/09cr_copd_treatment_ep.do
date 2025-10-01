@@ -28,14 +28,16 @@ putexcel A3 = "n_rx"
 SET UP LOOPING THROUGH ALL DRUG CLASSES
 *************************************************************/
 local drug ics_single ics_laba laba_lama laba_single lama_single triple_therapy
-local drug budesonide_single budesonide_laba 
-local drug triple_budesonide
+*local drug budesonide_single budesonide_laba 
+*local drug triple_budesonide
+
 di `"`drug'"'
 
 local ncol = 2
 
 di "`col'"
 foreach drugclass in `drug'{
+
 local col: word `ncol' of `c(ALPHA)'
 
 putexcel `col'1 = `"`drugclass'"'
@@ -86,6 +88,14 @@ replace quantity2 =. if quantity2 < 10 |quantity2 > 1000
 ***replace values > 100 and < 7 in duration variable as missing
 noi di "Replace durations < 7 and > 100 as missing"
 gen length = duration
+// Count implausible durations before replacement
+count if length < 7 | length > 100
+local n_implausible_length = r(N)
+local total_before_length = r(N) + r(N) // Total observations before dropping
+count
+local total_obs = r(N)
+local pct_implausible_length = (`n_implausible_length' / `total_obs') * 100
+
 replace length =. if length < 7 //***replaces all the 0s
 replace length =. if length > 100
 tab length 
@@ -105,6 +115,14 @@ duplicates tag patid issuedate prodcodeid, generate(duplicate)
 
 noi di "Count duplicates in terms of patid, issuedate and prodcodeid"
 tab duplicate
+
+// Calculate and save the number of duplicates for this drug class
+count if duplicate > 0
+local n_duplicates = r(N)
+noi di "Number of duplicate records for `drugclass': `n_duplicates'"
+putexcel A19 = "n_duplicates" // Added row for number of duplicates
+putexcel `col'19 = (`n_duplicates') // Added line to save number of duplicates
+
 
 duplicates tag, gen(duplicate_all)
 
@@ -261,11 +279,34 @@ order dosageid, last
 noi di "Generate exp_dur as duration where plausible, quantity/DD or median length for each drug"
 gen exp_dur = sum_length
 replace exp_dur = sum_days if exp_dur ==.
+// Count prescriptions before median imputation
+count
+local total_prescriptions = r(N)
+count if exp_dur ==.
+local n_missing_before_median = r(N)
+
+
 egen median_dur = median(sum_length), by(drugsubstancename)
 replace exp_dur = (median_dur) if exp_dur ==.
+
+// Count prescriptions where median was imputed
+local n_median_imputed = `n_missing_before_median'
+local pct_median_imputed = (`n_median_imputed' / `total_prescriptions') * 100
+
 drop median_dur
 
 assert exp_dur !=.
+
+// Export implausible lengths and median imputation statistics to Excel
+putexcel A20 = "n_implausible_length"
+putexcel `col'20 = (`n_implausible_length')
+putexcel A21 = "pct_implausible_length" 
+putexcel `col'21 = (`pct_implausible_length')
+putexcel A22 = "n_median_imputed"
+putexcel `col'22 = (`n_median_imputed')
+putexcel A23 = "pct_median_imputed"
+putexcel `col'23 = (`pct_median_imputed')
+
 
 *generate exposure end dates
 noi di "Generate exposure end dates"

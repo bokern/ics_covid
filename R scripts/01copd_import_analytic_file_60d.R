@@ -105,7 +105,11 @@ df$gender <- factor(df$gender, levels = c(1,2), labels = labels_gender)
 df$ics_ever <- factor(df$ics_ever, labels = labels_ics_ever)
 df$control_ever <- factor(df$control_ever, labels = labels_control_ever)
 
+
+
 # Recode ethnicity 
+table(df$eth5)
+
 # create a new variable 'eth' in the data frame
 df$eth <- NA_integer_
 

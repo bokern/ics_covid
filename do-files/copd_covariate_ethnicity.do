@@ -20,6 +20,13 @@ clear all
 
 *****run global file
 
+****export cl_ethnicity as txt file
+use "$Codelistsdir/cl_ethnicity.dta"
+export delim "$Codelistsdir/cl_ethnicity.txt"
+
+clear all
+
+
 capture log close
 log using $Logdir/covariate_ethnicity_copd.log, replace
 
