@@ -21,6 +21,7 @@ log using "$Logdir\11cr_copd_treatment_combinations60d.log", replace
 
 ***use file with treatment episodes according to 60d discontinuation definition
 use "$Datadir_copd\copd_treatment_episodes_60d"
+unique patid if class == 3
 
 expand 2, gen(dup)
 

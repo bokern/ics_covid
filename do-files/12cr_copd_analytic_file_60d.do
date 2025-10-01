@@ -92,12 +92,18 @@ merge 1:1 patid using "$Datadir_copd\death_date_w1.dta", nogen keep(match master
 save "${file_stub}_analytic_file_w1_no_exposures.dta", replace
 
 ***EXPOSURES
-merge 1:m patid using "${file_stub}_treatment_eps_60d", nogen keep(match master)
-drop on_ics_single on_ics_laba on_laba_single on_lama_single on_laba_lama on_triple_inhaler off_ics_single off_ics_laba off_laba_single off_lama_single off_laba_lama off_triple_inhaler date ics_single ics_laba laba_single lama_single laba_lama triple_inhaler triple ics_only laba_only lama_only ics_lama no_med _merge ics_group control_group ics_group
+merge 1:m patid using "$Datadir_asthma\\${file_stub}_treatment_baseline_60d", nogen keep(match master)
 
 duplicates drop
 export delim "${file_stub}_analytic_file_w1_60d.csv", replace
 
 clear all
 
+use "${file_stub}_analytic_file_w1_no_exposures.dta"
+
+merge 1:m patid using "${file_stub}_treatment_eps_60d_budesonide", nogen keep(match master)
+drop on_budesonide_single on_budesonide_laba on_laba_single on_lama_single on_laba_lama on_triple_budesonide off_budesonide_single off_budesonide_laba off_laba_single off_lama_single off_laba_lama off_triple_budesonide date budesonide_single budesonide_laba laba_single lama_single laba_lama triple_budesonide triple_bud budesonide_only laba_only lama_only budesonide_lama no_med _merge budesonide_group control_group budesonide_group
+
+duplicates drop
+export delim "${file_stub}_analytic_file_w1_60d_budesonide.csv", replace
 
