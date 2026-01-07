@@ -120,11 +120,6 @@ df$eth[df$eth5 == "2. Black"] <- 2
 df$eth[df$eth5 == "4. Mixed"] <- 3
 df$eth[df$eth5 == "5. Not Stated" | df$eth5 == "3. Other" | df$eth5 == ""] <- 4
 
-#This also works
-# df$ethn <- ifelse(df$eth5 == "", NA, df$eth5)
-# df$ethn <- factor(df$ethn)
-# df$ethn <- ifelse(df$eth5 == 6, NA, df$ethn)
-
 labels_eth <- c("White", "South Asian", "Black", "Mixed", "Unknown")
 df$eth <- factor(df$eth, levels = c(0,1,2,3,4), labels = labels_eth)
 
@@ -136,7 +131,6 @@ df$bmicat[df$bmi < 18.5] <- 1
 df$bmicat[df$bmi >= 18.5 & df$bmi < 25] <- 2
 df$bmicat[df$bmi >= 25 & df$bmi < 30] <- 3
 df$bmicat[df$bmi >= 30] <- 4
-
 df$bmicat[is.na(df$bmicat)] <- 2
 
 # Assign category labels
@@ -216,8 +210,6 @@ df$timeinstudy_death_any <- df$timeout_death_any - df$time_origin
 
 df <- df %>% dplyr::select(-c("yob", "mob", "day", "dob", "yo35bday", "do35bday", "lcd", "diabetes_date", "hypertension_date", "past_asthma_date", "cvd_date", "allcancers_date", "kidney_date", "immunosuppression_date", "smokdate", "flu_vacc_date", "pneumo_vacc_date", "dobmi"))
 
-#if these columns exist, remove them
-
 # Filter the dataframe based on conditions
 missing_ons_laba <- df %>%
   filter(missing_ons == 1 & treat == "LABA/LAMA") %>%
@@ -275,4 +267,3 @@ length(unique((df$patid[df$treat == "LABA/LAMA" & df$covid_death_present == 1]))
 # df2 <- df2 %>% dplyr::select(c("patid", "enddate", "regend", "treatgroup", "treat", "timeinstudy1", "timeinstudy2", "timeinstudy3", "timeinstudy_death_any", "pos_covid_test_present", "covid_hes_present", "covid_death_present", "any_death_present", "hos_pre_death", "death_date", "death_date_cprd", "death_date_ons", "baseline_ics", "baseline_control"))
 # 
 # df <- merge(df, df2[, c("patid", "treatgroup")], by = "patid", all.x = TRUE)
-

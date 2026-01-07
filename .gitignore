@@ -12,6 +12,7 @@ paths/*
 !paths/README.md
 
 # Stata dataset and output files -----------------------------------------
+*.dta
 *.gph
 *.log
 *.smcl
